@@ -509,10 +509,11 @@
             
             nameOverlay.classList.add('hidden');
             
+            // Initialize audio playback immediately from user gesture (required for mobile)
+            sheepAudio.volume = 0.5;
+            sheepAudio.play().catch(e => console.log("Sheep Audio blocked:", e));
+            
             setTimeout(() => {
-                sheepAudio.volume = 0.5;
-                sheepAudio.play().catch(e => console.log("Sheep Audio blocked:", e));
-
                 sheepLeft.classList.add('walk-in');
                 sheepRight.classList.add('walk-in');
                 sheepBottom.classList.add('walk-in');
@@ -535,8 +536,15 @@
             sheepAudio.currentTime = 0;
 
             celebrationAudio.volume = 1.0;
-            celebrationAudio.play().catch(e => console.log("Audio blocked:", e));
-            fireAudio.play().catch(e => console.log("Fire Audio blocked:", e));
+            const celebrationPromise = celebrationAudio.play();
+            if (celebrationPromise !== undefined) {
+                celebrationPromise.catch(e => console.log("Celebration Audio blocked:", e));
+            }
+            
+            const firePromise = fireAudio.play();
+            if (firePromise !== undefined) {
+                firePromise.catch(e => console.log("Fire Audio blocked:", e));
+            }
             // playCinematicChime();
 
             const rect = coreCube.getBoundingClientRect();
