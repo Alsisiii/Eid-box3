@@ -389,15 +389,21 @@
         .signature { font-size: 1.15rem; color: var(--cube-gold); font-weight: 800; letter-spacing: 0.5px; font-family: 'Reem Kufi', sans-serif; }
         footer { position: absolute; bottom: 15px; font-size: 0.7rem; color: rgba(255, 255, 255, 0.3); text-align: center; width: 100%;    border-top: 1px solid gold;
     padding-top: 15px; direction: ltr; }
-        footer span { color: white; font-weight: 600; font-size: 18px;  }
-        footer a{color: var(--cube-gold); font-weight: bold; font-size: 20px;}
+        footer span { color: white; font-weight: 600; font-size: 15px;  }
+        footer a{color: var(--cube-gold); font-weight: bold; font-size: 16px;}
     </style>
 </head>
 <body>
     
-    <audio id="celebrationAudio" src="music/eid3.mp3" preload="auto" loop></audio>
-    <audio id="sheepAudio" src="music/Sheeps Out at Feed 2 - QuickSounds.com.mp3" preload="auto" loop></audio>
-    <audio id="Fire" src="music/fireworks.mp3"></audio>
+    <audio id="celebrationAudio" preload="auto" loop playsinline muted>
+        <source src="music/eid3.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="sheepAudio" preload="auto" loop playsinline muted>
+        <source src="music/Sheeps Out at Feed 2 - QuickSounds.com.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="Fire" playsinline muted>
+        <source src="music/fireworks.mp3" type="audio/mpeg">
+    </audio>
 
     <!-- SVGs with Solid Color Ropes -->
     <svg width="0" height="0" style="position:absolute;">
@@ -498,6 +504,25 @@
         const sheepAudio = document.getElementById('sheepAudio');
         const fireAudio = document.getElementById('Fire');
 
+        // Helper function to safely play audio with retry if not ready
+        function playAudioSafely(audioElement, volumeLevel = 1.0) {
+            audioElement.volume = volumeLevel;
+            audioElement.muted = false; // Unmute when trying to play
+            const playAttempt = audioElement.play();
+            
+            if (playAttempt !== undefined) {
+                playAttempt
+                    .catch(error => {
+                        console.log("Audio play failed, retrying:", error);
+                        // Retry after a short delay if not ready
+                        setTimeout(() => {
+                            audioElement.muted = false;
+                            audioElement.play().catch(e => console.log("Retry failed:", e));
+                        }, 100);
+                    });
+            }
+        }
+
         function startSequence() {
             let guestName = nameInput.value.trim();
             if(!guestName) guestName = 'يا غالي';
@@ -510,8 +535,7 @@
             nameOverlay.classList.add('hidden');
             
             // Initialize audio playback immediately from user gesture (required for mobile)
-            sheepAudio.volume = 0.5;
-            sheepAudio.play().catch(e => console.log("Sheep Audio blocked:", e));
+            playAudioSafely(sheepAudio, 0.5);
             
             setTimeout(() => {
                 sheepLeft.classList.add('walk-in');
@@ -535,16 +559,8 @@
             sheepAudio.pause();
             sheepAudio.currentTime = 0;
 
-            celebrationAudio.volume = 1.0;
-            const celebrationPromise = celebrationAudio.play();
-            if (celebrationPromise !== undefined) {
-                celebrationPromise.catch(e => console.log("Celebration Audio blocked:", e));
-            }
-            
-            const firePromise = fireAudio.play();
-            if (firePromise !== undefined) {
-                firePromise.catch(e => console.log("Fire Audio blocked:", e));
-            }
+            playAudioSafely(celebrationAudio, 1.0);
+            playAudioSafely(fireAudio, 1.0);
             // playCinematicChime();
 
             const rect = coreCube.getBoundingClientRect();
