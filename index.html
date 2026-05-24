@@ -401,7 +401,7 @@
     <audio id="sheepAudio" preload="auto" loop playsinline muted>
         <source src="music/Sheeps Out at Feed 2 - QuickSounds.com.mp3" type="audio/mpeg">
     </audio>
-    <audio id="Fire" playsinline muted>
+    <audio id="Fire" preload="auto" playsinline muted>
         <source src="music/fireworks.mp3" type="audio/mpeg">
     </audio>
 
@@ -504,23 +504,45 @@
         const sheepAudio = document.getElementById('sheepAudio');
         const fireAudio = document.getElementById('Fire');
 
-        // Helper function to safely play audio with retry if not ready
+        // Pre-load all audio elements on page load
+        function initializeAudio() {
+            [celebrationAudio, sheepAudio, fireAudio].forEach(audio => {
+                audio.volume = 1.0;
+                audio.load(); // Force load the audio resource
+            });
+        }
+        
+        // Initialize audio on page load
+        if (document.readyState !== 'loading') {
+            initializeAudio();
+        } else {
+            document.addEventListener('DOMContentLoaded', initializeAudio);
+        }
+
+        // Helper function to safely play audio with multiple retry attempts
         function playAudioSafely(audioElement, volumeLevel = 1.0) {
             audioElement.volume = volumeLevel;
             audioElement.muted = false; // Unmute when trying to play
-            const playAttempt = audioElement.play();
             
-            if (playAttempt !== undefined) {
-                playAttempt
-                    .catch(error => {
-                        console.log("Audio play failed, retrying:", error);
-                        // Retry after a short delay if not ready
-                        setTimeout(() => {
-                            audioElement.muted = false;
-                            audioElement.play().catch(e => console.log("Retry failed:", e));
-                        }, 100);
-                    });
-            }
+            const attemptPlay = (retryCount = 0) => {
+                const playAttempt = audioElement.play();
+                
+                if (playAttempt !== undefined) {
+                    playAttempt
+                        .catch(error => {
+                            console.log(`Audio play failed (attempt ${retryCount + 1}):`, error);
+                            // Multiple retries with increasing delays (100ms, 200ms, 300ms)
+                            if (retryCount < 3) {
+                                setTimeout(() => {
+                                    audioElement.muted = false;
+                                    attemptPlay(retryCount + 1);
+                                }, 100 * (retryCount + 1));
+                            }
+                        });
+                }
+            };
+            
+            attemptPlay();
         }
 
         function startSequence() {
