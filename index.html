@@ -398,9 +398,11 @@
     <audio id="celebrationAudio" preload="auto" loop playsinline muted>
         <source src="music/eid3.mp3" type="audio/mpeg">
     </audio>
-    <audio id="sheepAudio" preload="auto" loop playsinline muted>
+    <audio id="sheepAudio" preload="auto"  playsinline muted>
         <source src="music/baaing-sheep-sound-effect.mp3" type="audio/mpeg">
     </audio>
+
+        <audio id="sheepAudio2" src="music/freesound_community-boing-spring-mouth-harp-04-20-13-4-103346.mp3" preload="auto" ></audio>
     <audio id="Fire" preload="auto" playsinline muted>
         <source src="music/fireworks.mp3" type="audio/mpeg">
     </audio>
@@ -503,11 +505,14 @@
         const celebrationAudio = document.getElementById('celebrationAudio');
         const sheepAudio = document.getElementById('sheepAudio');
         const fireAudio = document.getElementById('Fire');
-
+        const sheepAudio2 = document.getElementById('sheepAudio2');
         // Pre-load all audio elements on page load
         function initializeAudio() {
-            [celebrationAudio, sheepAudio, fireAudio].forEach(audio => {
-                audio.volume = 1.0;
+            celebrationAudio.volume = 1.0;
+            fireAudio.volume = 1.0;
+            sheepAudio.volume = 0.05;
+            sheepAudio2.volume = 0.05;
+            [celebrationAudio, sheepAudio, fireAudio, sheepAudio2].forEach(audio => {
                 audio.load(); // Force load the audio resource
             });
         }
@@ -558,15 +563,24 @@
             
             // CRITICAL: Start ALL audio immediately from user gesture (iOS requirement)
             // This initiates playback during the gesture, satisfying browser restrictions
-            playAudioSafely(sheepAudio, 0.5);
+            playAudioSafely(sheepAudio, 0.005);
             playAudioSafely(celebrationAudio, 1.0);
             playAudioSafely(fireAudio, 1.0);
-            
+            playAudioSafely(sheepAudio2, 0.05);
             // Pause celebration and fire audio immediately - they'll be resumed later
             celebrationAudio.pause();
             fireAudio.pause();
-            
+            sheepAudio2.pause();
             setTimeout(() => {
+                sheepAudio.muted = false;
+                sheepAudio.volume = 0.005;
+                sheepAudio.play().catch(e => console.log("Sheep Audio blocked:", e));
+
+                sheepAudio2.muted = false;
+                sheepAudio2.volume = 0.05;
+                sheepAudio2.play().catch(e => console.log("Sheep Audio 2 blocked:", e));
+
+                sheepLeft.classList.add('walk-in');
                 sheepLeft.classList.add('walk-in');
                 sheepRight.classList.add('walk-in');
                 sheepBottom.classList.add('walk-in');
