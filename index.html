@@ -655,10 +655,10 @@
             
             nameOverlay.classList.add('hidden');
             
-            playAudioSafely(sheepAudio, 0.0090);
+            playAudioSafely(sheepAudio, 0.05);
             playAudioSafely(celebrationAudio, 1.0);
             playAudioSafely(fireAudio, 1.0);
-            playAudioSafely(sheepAudio2, 0.0090);
+            playAudioSafely(sheepAudio2, 0.05);
 
             celebrationAudio.pause();
             fireAudio.pause();
@@ -666,11 +666,11 @@
 
             setTimeout(() => {
                 sheepAudio.muted = false;
-                sheepAudio.volume = 0.0090;
+                sheepAudio.volume = 0.05;
                 sheepAudio.play().catch(e => console.log("Sheep Audio blocked:", e));
 
                 sheepAudio2.muted = false;
-                sheepAudio2.volume = 0.0090;
+                sheepAudio2.volume = 0.05;
                 sheepAudio2.play().catch(e => console.log("Sheep Audio 2 blocked:", e));
 
                 sheepLeft.classList.add('walk-in');
