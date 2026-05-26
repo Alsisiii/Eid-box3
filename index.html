@@ -468,7 +468,7 @@
     <audio id="sheepAudio" preload="auto" loop playsinline muted>
         <source src="music/baaing-sheep-sound-effect.mp3" type="audio/mpeg">
     </audio>
-    <audio id="sheepAudio2" src="music/freesound_community-boing-spring-mouth-harp-04-20-13-4-103346.mp3" preload="auto"></audio>
+    <audio id="sheepAudio2" src="music/freesound_community-boing-spring-mouth-harp-04-20-13-4-103346.mp3" preload="auto" muted playsinline></audio>
     <audio id="Fire" preload="auto" playsinline muted>
         <source src="music/fireworks.mp3" type="audio/mpeg">
     </audio>
@@ -662,7 +662,6 @@
 
             celebrationAudio.pause();
             fireAudio.pause();
-            sheepAudio2.pause();
 
             setTimeout(() => {
                 sheepAudio.muted = false;
